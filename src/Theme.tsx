@@ -43,12 +43,21 @@ interface ThemeContextInterface {
   AVAILABLE_THEMES: typeof AVAILABLE_THEMES;
 }
 
+/**
+ * theme: currently selected theme
+ * setTheme: theme setter
+ * AVAILABLE_THEMES: string[] (ThemeType[]) of all available themes
+ */
 const ThemeContext = createContext<ThemeContextInterface>({
-  theme: 'default',
+  theme: AVAILABLE_THEMES[0],
   setTheme: (theme: ThemeType) => undefined,
   AVAILABLE_THEMES,
 });
 
+/**
+ * removes previous existing theme <link />
+ * onLoad of the next to prevent FOUC
+ */
 const onStyleLoad = () => {
   const themeLinks = Array.from(
     document.head.querySelectorAll('[data-app-theme]'),
@@ -59,6 +68,10 @@ const onStyleLoad = () => {
   }
 };
 
+/**
+ * given a <link data-app-theme /> element,
+ * extracts the default theme from its href
+ */
 const parseInitialTheme = (): ThemeType => {
   const { href } = document.querySelector(
     '[data-app-theme]',
@@ -66,9 +79,9 @@ const parseInitialTheme = (): ThemeType => {
 
   const theme = href.match(
     `/${AVAILABLE_THEMES.map(theme => `(${theme})`).join('|')}/g`,
-  );
+  ) as ThemeType[];
 
-  return theme ? (theme[0] as ThemeType) : AVAILABLE_THEMES[0];
+  return theme ? theme[0] : AVAILABLE_THEMES[0];
 };
 
 let isFirstRender = true;
@@ -86,7 +99,7 @@ const Theme: FC = ({ children }) => {
     const link = Object.assign(document.createElement('link'), {
       rel: 'stylesheet',
       href: `//unpkg.com/bulmaswatch/${theme}/bulmaswatch.min.css`,
-      onload: onStyleLoad, // wait until upcoming theme was loaded to prevent FOUC
+      onload: onStyleLoad,
     });
 
     link.dataset.appTheme = '1';
