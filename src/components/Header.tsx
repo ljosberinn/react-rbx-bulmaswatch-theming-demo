@@ -1,6 +1,6 @@
 import React, { useContext, MouseEvent } from 'react';
 import { ThemeContext, ThemeType } from '../Theme';
-import { Navbar } from 'rbx';
+import { Navbar, Column } from 'rbx';
 
 const Header: React.FC = () => {
   const { AVAILABLE_THEMES, theme: currentTheme, setTheme } = useContext(
@@ -23,8 +23,8 @@ const Header: React.FC = () => {
               <div className="navbar-item has-dropdown is-hoverable">
                 <a className="navbar-link">Change Theme</a>
                 <div className="navbar-dropdown is-boxed">
-                  <div className="columns">
-                    <div className="column">
+                  <Column.Group>
+                    <Column>
                       {AVAILABLE_THEMES.slice(0, halfOfArray).map(theme => {
                         return (
                           <Navbar.Item
@@ -38,8 +38,8 @@ const Header: React.FC = () => {
                           </Navbar.Item>
                         );
                       })}
-                    </div>
-                    <div className="column">
+                    </Column>
+                    <Column>
                       {AVAILABLE_THEMES.slice(
                         halfOfArray,
                         AVAILABLE_THEMES.length,
@@ -56,8 +56,8 @@ const Header: React.FC = () => {
                           </Navbar.Item>
                         );
                       })}
-                    </div>
-                  </div>
+                    </Column>
+                  </Column.Group>
                 </div>
               </div>
             </div>

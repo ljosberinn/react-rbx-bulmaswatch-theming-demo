@@ -58,7 +58,7 @@ const ThemeContext = createContext<ThemeContextInterface>({
  * removes previous existing theme <link />
  * onLoad of the next to prevent FOUC
  */
-const onStyleLoad = () => {
+const onStyleLoad = (): void => {
   const themeLinks = Array.from(
     document.head.querySelectorAll('[data-app-theme]'),
   );
