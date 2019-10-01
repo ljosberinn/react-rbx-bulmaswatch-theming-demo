@@ -7,6 +7,14 @@ import React, {
   useState,
 } from 'react';
 
+const LINK_ELEMENT_STATICS = {
+  selector: '[data-app-theme]',
+  prop: {
+    key: 'appTheme',
+    value: '1',
+  },
+};
+
 // https://github.com/jenil/bulmaswatch/tree/gh-pages/_themes
 const AVAILABLE_THEMES = [
   'default',
@@ -60,7 +68,7 @@ const ThemeContext = createContext<ThemeContextInterface>({
  */
 const onStyleLoad = (): void => {
   const themeLinks = Array.from(
-    document.head.querySelectorAll('[data-app-theme]'),
+    document.head.querySelectorAll(LINK_ELEMENT_STATICS.selector),
   );
 
   if (themeLinks.length > 1) {
@@ -73,9 +81,7 @@ const onStyleLoad = (): void => {
  * extracts the default theme from its href
  */
 const parseInitialTheme = (): ThemeType => {
-  const { href } = document.querySelector(
-    '[data-app-theme]',
-  ) as HTMLLinkElement;
+  const { href } = getThemeLink();
 
   const theme = href.match(
     `/${AVAILABLE_THEMES.map(theme => `(${theme})`).join('|')}/g`,
@@ -83,6 +89,9 @@ const parseInitialTheme = (): ThemeType => {
 
   return theme ? theme[0] : AVAILABLE_THEMES[0];
 };
+
+const getThemeLink = () =>
+  document.head.querySelector(LINK_ELEMENT_STATICS.selector) as HTMLLinkElement;
 
 let isFirstRender = true;
 
@@ -102,9 +111,12 @@ const Theme: FC = ({ children }) => {
       onload: onStyleLoad,
     });
 
-    link.dataset.appTheme = '1';
+    const { key, value } = LINK_ELEMENT_STATICS.prop;
 
-    document.head.appendChild(link);
+    link.dataset[key] = value;
+
+    // prevent overriding/collision with styles appearing further down in the head
+    getThemeLink().insertAdjacentElement('afterend', link);
   }, [theme]);
 
   return (
